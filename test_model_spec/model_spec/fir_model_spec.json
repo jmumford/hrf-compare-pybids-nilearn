@@ -1,0 +1,98 @@
+{
+  "Name": "ds000171",
+  "BIDSModelVersion": "1.0.0",
+  "Input": {
+    "subject": [
+      "control01"
+    ],
+    "task": [
+      "music"
+    ],
+    "run": [
+      1
+    ]
+  },
+  "Nodes": [
+    {
+      "Level": "Run",
+      "Name": "run_level",
+      "GroupBy": [
+        "run",
+        "subject"
+      ],
+      "Transformations": {
+        "Transformer": "pybids-transforms-v1",
+        "Instructions": [
+          {
+            "Name": "Factor",
+            "Input": [
+              "trial_type"
+            ]
+          },
+          {
+            "Name": "Convolve",
+            "Model": "fir",
+            "FIRDelays": [0,3,6],
+            "Input": [
+              "trial_type.*"
+            ]
+          }
+        ]
+      },
+      "Model": {
+        "X": [
+          1,
+          "trial_type.positive_music_0",
+          "trial_type.positive_music_3",
+          "trial_type.positive_music_6",
+          "trial_type.negative_music_0",
+          "trial_type.negative_music_3",
+          "trial_type.negative_music_6",
+          "trial_type.tones_0",
+          "trial_type.tones_3",
+          "trial_type.tones_6",
+          "trans_*",
+          "rot_*",
+          "cosine*"
+        ],
+        "Type": "glm"
+      },
+      "Contrasts": [
+        {
+          "Name": "musicvsounds_sumlags",
+          "ConditionList": [
+            "trial_type.positive_music_0",
+            "trial_type.positive_music_3",
+            "trial_type.positive_music_6",
+            "trial_type.negative_music_0",
+            "trial_type.negative_music_3",
+            "trial_type.negative_music_6",
+            "trial_type.tones_0",
+            "trial_type.tones_3",
+            "trial_type.tones_6"
+          ],
+          "Weights": [
+            0.1667, 0.1667, 0.1667,
+            0.1667, 0.1667, 0.1667,
+            -0.333, -0.333, -0.333
+          ],
+          "Test": "t"
+        },
+        {
+          "Name": "musicvsounds_lag6",
+          "ConditionList": [
+            "trial_type.positive_music_6",
+            "trial_type.negative_music_6",
+            "trial_type.tones_6"
+          ],
+          "Weights": [
+            0.5,
+            0.5,
+            -1
+          ],
+          "Test": "t"
+        }
+      ]
+    }
+  ]
+}
